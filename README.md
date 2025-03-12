@@ -1,7 +1,9 @@
 # 饺子的自我介绍
 
-![Stewie Griffin](https://th.bing.com/th/id/OIP.ugzf9IIStLX9KIyHBNfxAAAAAA?w=176&h=180&c=7&r=0&o=5&pid=1.7){: width=200}
-大家好，我是**饺子 格里芬**，*天才婴儿/时间旅行者/邪恶科学家*。以下是我的自我介绍：
+![Stewie Griffin](https://th.bing.com/th/id/OIP.ugzf9IIStLX9KIyHBNfxAAAAAA?w=176&h=180&c=7&r=0&o=5&pid=1.7)
+
+
+大家好，我是**饺子·格里芬**，*天才婴儿/时间旅行者/邪恶科学家*。以下是我的自我介绍：
 
 ---
 
