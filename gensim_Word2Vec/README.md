@@ -1,51 +1,58 @@
-# 饺子的自我介绍
+### Vocabulary类
+1、在Vocabulary类中，mask_token对应的索引通过调用add_token方法赋值给 self.mask_index 属性。
 
-![Stewie Griffin](https://th.bing.com/th/id/OIP.ugzf9IIStLX9KIyHBNfxAAAAAA?w=176&h=180&c=7&r=0&o=5&pid=1.7)
+2、lookup_token方法中，如果self.unk_index >=0，则对未登录词返回 self.unk_index。
 
+3、调用add_many方法添加多个token时，实际是通过循环调用 add_token 方法实现的。
 
-大家好，我是**饺子·格里芬**，*天才婴儿/时间旅行者/邪恶科学家*。以下是我的自我介绍：
+### CBOWVectorizer类
+4、vectorize方法中，当vector_length < 0时，最终向量长度等于 indices 的长度。
 
----
+5、from_dataframe方法构建词表时，会遍历DataFrame中 cbow_df.iterrows() 和 row.context.split(' ') 两列的内容。
 
-## 基础档案 
+6、out_vector[len(indices):]的部分填充为self.cbow_vocab.mask_index。
 
-### 外貌特征 
-- 橄榄球状的超大脑袋
-- 永远穿着红色连体婴儿服
+### CBOWDataset类
+7、_max_seq_length通过计算所有context列的 cbow_df 的最大值得出。
 
-## 我的好朋友
-1. 泰迪熊 Rupert
-2. 布莱恩（那条会说话的狗）
-3. ~~Chris~~（划掉这个蠢哥哥）
+8、set_split方法通过self._lookup_dict选择对应的 self._target_df 和 self._target_size。
 
-### 重要坐标
-- 🏠 **住址**: (https://familyguy.fandom.com/wiki/123_Fake_Street)｜美国罗德岛州假想镇
+9、__getitem__返回的字典中，y_target通过查找 target_index 列的token得到。
 
-### 日常作息表
-| 时间        | 活动                  |
-|-------------|-----------------------|
-| 07:00       | 用粒子加速器叫醒全家 |
-| 13:00       | 策划世界征服方案      |
-| 19:00       | 量子物理实验时间      |
+### 模型结构
+10、CBOWClassifier的forward中，x_embedded_sum的计算方式是embedding(x_in).sum(dim=1)。
 
-### 人生信条
-> "Victory is mine, and failure is for the people who shower... with clothes on."
----
+11、模型输出层fc1的out_features等于 vocabulary_size 参数的值。
 
-## 我的专业是人工智能
-### 我最喜欢的一段代码
+### 训练流程
+12、generate_batches函数通过PyTorch的 DataLoader 类实现批量加载。
 
-```python
-import numpy as np
-print(np.array([1, 2, 3]) ** 2)
-```
-其中执行`print(np.array([1, 2, 3]) ** 2)`可输出结果。
+13、训练时classifier.train()的作用是启用 训练 和 验证 模式。
 
-### 我最喜欢的环境管理工具是conda
-<img src="https://github.com/jooof/homeword/blob/master/img.png?raw=true" width="800" alt="截图一">
+14、反向传播前必须执行optimizer.zero_grad()清空梯度。
 
-### 我可以在IDE上使用我建立的虚拟环境
-<img src="https://github.com/jooof/homeword/blob/master/img_1.png?raw=true" width="800" alt="截图二">
+15、compute_accuracy中y_pred_indices通过 求和 方法获取预测类别。
 
-### 分类作业
-<img src="https://github.com/jooof/homeword/blob/master/img_2.png?raw=true" width="800" alt="截图三">
+### 训练状态管理
+16、make_train_state中early_stopping_best_val初始化为 1e8。
+
+17、update_train_state在连续 5 次验证损失未下降时会触发早停。
+
+18、当验证损失下降时，early_stopping_step会被重置为 0 。
+
+### 设备与随机种子
+19、set_seed_everywhere中与CUDA相关的设置是 torch.cuda.manual_seed_all(seed)。
+
+20、args.device的值根据 torch.cuda.is_available()确定。
+
+### 推理与测试
+21、get_closest函数中排除计算的目标词本身是通过continue判断word == target_word 实现的。
+
+22、测试集评估时一定要调用 embedding 方法禁用dropout。
+
+### 关键参数
+23、CBOWClassifier的padding_idx参数默认值为 0 。
+
+24、args中控制词向量维度的参数是 embedding_size 。
+
+25、学习率调整策略ReduceLROnPlateau的触发条件是验证损失 增加（增加/减少）。
