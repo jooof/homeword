@@ -9,6 +9,7 @@
 - 邮件分类预测：支持对新邮件进行自动分类
 
 ## 一、库引入分析
+````
 import re
 import os
 from jieba import cut
@@ -16,6 +17,7 @@ from itertools import chain
 from collections import Counter
 import numpy as np
 from sklearn.naive_bayes import MultinomialNB
+````
 re：用于正则表达式过滤无效字符
 
 jieba：中文分词工具
@@ -28,6 +30,7 @@ MultinomialNB：适用于离散特征（如词频）的朴素贝叶斯分类器
 
 ## 二、核心函数解析
 ### 1. 文本处理函数 get_words()
+````
 def get_words(filename):
     words = []
     with open(filename, 'r', encoding='utf-8') as fr:
@@ -38,6 +41,7 @@ def get_words(filename):
             line = filter(lambda word: len(word) > 1, line)  # 过滤单字
             words.extend(line)
     return words
+````
 输入：文本文件路径
 
 输出：过滤后的词语列表
@@ -48,11 +52,13 @@ def get_words(filename):
 过滤长度≤1的词语
 
 ### 2. 高频词提取函数 get_top_words()
+````
 def get_top_words(top_num):
     filename_list = ['邮件_files/{}.txt'.format(i) for i in range(151)]
     # ...（遍历文件构建词库）
     freq = Counter(chain(*all_words))
     return [i[0] for i in freq.most_common(top_num)]
+````
 功能：统计训练集中出现频率最高的词语
 
 实现细节：
@@ -62,20 +68,23 @@ Counter.most_common()获取前N个高频词
 
 
 ### 构建词向量
+````
 vector = []
 for words in all_words:
     word_map = list(map(lambda word: words.count(word), top_words))
     vector.append(word_map)
 vector = np.array(vector)
+````
 逻辑说明：
 为每个邮件创建特征向量 向量元素表示对应高频词在邮件中的出现次数
 
 [0, 2, 0, ..., 1]  # 每个数字对应top_words中的词频
 ### 四、模型训练部分
-
+````
 labels = np.array([1]*127 + [0]*24)  # 前127为垃圾邮件
 model = MultinomialNB()
 model.fit(vector, labels)
+````
 标签分配：
 
 0-126.txt标记为1（垃圾邮件）
@@ -87,11 +96,13 @@ model.fit(vector, labels)
 多项式朴素贝叶斯适合处理离散型特征（词频统计）
 
 ## 五、预测函数分析
+````
 def predict(filename):
     words = get_words(filename)
     current_vector = np.array(tuple(map(lambda word: words.count(word), top_words)))
     result = model.predict(current_vector.reshape(1, -1))
     return '垃圾邮件' if result == 1 else '普通邮件'
+````
 实现流程：
 对新邮件进行相同预处理
 生成与训练集相同维度的词频向量
@@ -109,7 +120,9 @@ TF-IDF加权：替代简单词频统计
 特征选择：使用卡方检验等选择区分性词语
 
 ### 七、代码执行示例
+````
 print(predict('邮件_files/151.txt'))  # 输出：垃圾邮件/普通邮件
+````
 测试说明：
 151-155.txt为独立测试文件未参与训练过程
 
