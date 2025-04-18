@@ -58,3 +58,5 @@
 25、学习率调整策略ReduceLROnPlateau的触发条件是验证损失 增加（增加/减少）。
 
 <img src="https://github.com/jooof/homeword/blob/master/gensim_Word2Vec/img.png?raw=true" alt="截图一">
+
+<img src="https://github.com/jooof/homeword/blob/master/gensim_Word2Vec/img_1.png?raw=true" alt="截图一">
